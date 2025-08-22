@@ -8,7 +8,7 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav mx-auto">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
               aria-expanded="false">
@@ -33,6 +33,7 @@
             </ul>
           </li>
         </ul>
+        <button type="button" class="btn" id="login">Login</button>
       </div>
     </div>
   </nav>
@@ -44,5 +45,8 @@
   padding: 10px;
   border-radius: 10px;
   font-family: "Pixelify Sans", sans-serif;
+}
+#login{
+  background-color: #9bbc0f;
 }
 </style>
