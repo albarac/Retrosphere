@@ -35,6 +35,12 @@
   color: #000000;
   font-family: Arial, sans-serif;
   width: 100%;
+  transition: 1s;
+}
+
+.post:hover{
+  cursor: pointer;
+  background: #d1d1d5;
 }
 
 .post-left {
