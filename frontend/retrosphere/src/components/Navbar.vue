@@ -66,7 +66,10 @@
         </div>
         <div class="modal-footer d-flex justify-content-between">
 
-          <button id="modal_btn" type="button" class="btn">Sign Up</button>
+          <router-link to="/signup">
+            <button id="modal_btn" data-bs-dismiss="modal" type="button" class="btn">Sign Up</button>
+          </router-link>
+
 
           <div style="display: flex; gap: 10px;">
             <button id="modal_btn" type="button" class="btn" data-bs-dismiss="modal">Close</button>
