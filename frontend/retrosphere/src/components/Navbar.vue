@@ -43,11 +43,42 @@
         </ul>
 
 
-        <button type="button" class="btn" id="login">Login</button>
+        <button type="button" class="btn" id="login" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
 
       </div>
     </div>
   </nav>
+
+
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="loginModalLabel"
+            style="font-family: 'Pixelify Sans', sans-serif; color:#9bbc0f;; ">Speak
+            friend and enter !</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <input type="text" class="form-control" placeholder="frodobaggins@shire.com">
+          <input type="password" class="form-control" placeholder="********">
+        </div>
+        <div class="modal-footer d-flex justify-content-between">
+
+          <button id="modal_btn" type="button" class="btn">Sign Up</button>
+
+          <div style="display: flex; gap: 10px;">
+            <button id="modal_btn" type="button" class="btn" data-bs-dismiss="modal">Close</button>
+            <button id="modal_btn" type="button" class="btn">Login</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
 </template>
 
 <script>
@@ -70,5 +101,37 @@
   color: white;
   font-size: 20px;
   cursor: pointer;
+}
+
+.modal-content {
+  background-color: #0f380f;
+  color: white;
+}
+
+.modal-header {
+  border-top: #9bbc0f;
+  border-color: #9bbc0f;
+}
+
+.modal-footer {
+  border: none;
+}
+
+.modal-body input {
+  margin-top: 20px;
+  border: none;
+  color: #9bbc0f;
+  font-family: "Jersey 15", sans-serif;
+  background-color: #306230;
+}
+
+input::placeholder {
+  color: #9bbc0f;
+  opacity: 1;
+}
+
+#modal_btn {
+  background-color: #9bbc0f;
+  font-family: "Pixelify Sans", sans-serif;
 }
 </style>
