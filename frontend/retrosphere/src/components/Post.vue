@@ -48,6 +48,7 @@
   padding: 15px;
   text-align: center;
   border-right: 1px solid #333;
+  font-family: "Pixelify Sans", sans-serif;
 }
 
 .avatar {
@@ -79,20 +80,22 @@
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
-  font-size: 14px;
+  font-size: 20px;
   color: #000000;
   border-bottom: 1px solid #333;
   padding: 5px;
+  font-family: "Pixelify Sans", sans-serif;
 }
 
 .post-content {
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1.5;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   text-align: justify;
+  font-family: "Jersey 15", sans-serif;
 }
 
 #delete {

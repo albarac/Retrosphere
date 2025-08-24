@@ -6,7 +6,7 @@
         aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-
+      <i id="add_post" class="bi bi-dpad-fill"></i>
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
         <ul class="navbar-nav mx-auto">
           <li class="nav-item dropdown">
@@ -48,5 +48,10 @@
 }
 #login{
   background-color: #9bbc0f;
+}
+#add_post{
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
 }
 </style>
