@@ -1,13 +1,21 @@
 <template>
   <nav id="navbar" class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <a class="navbar-brand text-white" href="#">Retrosphere</a>
+      <router-link to="/" style="text-decoration: none;">
+        <a class="navbar-brand text-white">Retrosphere</a>
+      </router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
         aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <i id="add_post" class="bi bi-dpad-fill"></i>
+
+
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
+
+        <router-link to="/add">
+          <i id="add_post" class="bi bi-dpad-fill"></i>
+        </router-link>
+
         <ul class="navbar-nav mx-auto">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
@@ -33,11 +41,18 @@
             </ul>
           </li>
         </ul>
+
+
         <button type="button" class="btn" id="login">Login</button>
+
       </div>
     </div>
   </nav>
 </template>
+
+<script>
+
+</script>
 
 <style scoped>
 #navbar {
@@ -46,10 +61,12 @@
   border-radius: 10px;
   font-family: "Pixelify Sans", sans-serif;
 }
-#login{
+
+#login {
   background-color: #9bbc0f;
 }
-#add_post{
+
+#add_post {
   color: white;
   font-size: 20px;
   cursor: pointer;
