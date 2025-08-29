@@ -2,19 +2,75 @@
     <div class="signup">
         <div class="form">
             <h5 style=" font-family: 'Pixelify Sans', sans-serif;">Join the adventure !</h5>
-            <input type="text" class="form-control" placeholder="frodobaggins@shire.com">
-            <input type="password" class="form-control" placeholder="********">
+            <input type="email" v-model="email" class="form-control" placeholder="frodobaggins@shire.com">
+            <input type="text" v-model="username" class="form-control" placeholder="FrodoTheRingBearer">
+            <input type="password" v-model="password" class="form-control" placeholder="********">
+            <input type="password" v-model="confirmPassword" class="form-control" placeholder="Confirm password">
             <div
                 style="display: flex;flex-direction: row;justify-content: space-between;align-items: center; gap: 10px;width: 100%;">
-                <button id="register_btn" type="button" class="btn">Register</button>
+                <button id="register_btn" @click="register" type="button" class="btn">Register</button>
                 <router-link to="/">
                     <button id="register_btn" type="button" class="btn">Return home!</button>
                 </router-link>
-
             </div>
+            <h3 v-if="error === false" style="margin-top: 10px; font-family: 'Pixelify Sans', sans-serif;">Successful
+                login...
+            </h3>
+            <h3 v-if="error" style="margin-top: 10px; font-family: 'Pixelify Sans', sans-serif;color: red;">
+                Login failed...</h3>
         </div>
+
     </div>
 </template>
+
+<script>
+import axios from 'axios';
+export default {
+    name: "SignUp",
+    data() {
+        return {
+            email: "",
+            username: "",
+            password: "",
+            confirmPassword: "",
+            image: "avatar0.png",
+            error: null
+        };
+    },
+    methods: {
+        register() {
+
+            if (!this.email) {
+                this.error = true;
+                return;
+            }
+
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(this.email)) {
+                this.error = true;
+                return;
+            }
+
+            if (this.password == this.confirmPassword && this.password.length > 6) {
+                let newUser = {
+                    username: this.username,
+                    email: this.email,
+                    password: this.password,
+                    image: this.image,
+                }
+                axios.post('http://localhost:9000/register', newUser)
+                    .then(res => {
+                        console.log("Response: ", res);
+                        this.$router.push({ name: 'Home' })
+                    })
+                this.error = false;
+            } else {
+                this.error = true;
+            }
+        }
+    },
+};
+</script>
 
 <style scoped>
 .signup {
