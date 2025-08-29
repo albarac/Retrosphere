@@ -41,6 +41,44 @@ async function connectDB() {
       res.json(result);
     }
   });
+
+  app.post("/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      const user = await db.collection("Users").findOne({ email });
+      if (!user) {
+        return res.status(404).json({ error: "User not found!" });
+      }
+
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({ error: "Invalid password!" });
+      }
+
+      const token = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET || "default_secret",
+        {
+          algorithm: "HS512",
+          expiresIn: "7d",
+        }
+      );
+
+      const { password: _, ...safeUser } = user;
+
+      return res.json({
+        message: "Login successful!",
+        token,
+        userData: safeUser,
+      });
+    } catch (error) {
+      console.error("Login error:", error);
+      return res
+        .status(500)
+        .json({ error: "Server error. Please try again later." });
+    }
+  });
 }
 
 connectDB().then(() => {

@@ -47,7 +47,8 @@
         </router-link>
 
 
-        <button type="button" class="btn" id="login" data-bs-toggle="modal" data-bs-target="#loginModal">Login</button>
+        <button type="button" class="btn" id="login" @click="showLoginModal">Login</button>
+
 
       </div>
     </div>
@@ -63,8 +64,8 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <input type="text" class="form-control" placeholder="frodobaggins@shire.com">
-            <input type="password" class="form-control" placeholder="********">
+            <input v-model="email" type="text" class="form-control" placeholder="frodobaggins@shire.com">
+            <input v-model="password" type="password" class="form-control" placeholder="********">
           </div>
           <div class="modal-footer d-flex justify-content-between">
 
@@ -75,10 +76,16 @@
 
             <div style="display: flex; gap: 10px;">
               <button id="modal_btn" type="button" class="btn" data-bs-dismiss="modal">Close</button>
-              <button id="modal_btn" type="button" class="btn">Login</button>
+              <button @click="login" id="modal_btn" type="button" class="btn">Login</button>
             </div>
 
+
           </div>
+          <h3 v-if="error === false" style="margin-top: 10px; font-family: 'Pixelify Sans', sans-serif;">Successful
+            login...
+          </h3>
+          <h3 v-if="error" style="margin-top: 10px; font-family: 'Pixelify Sans', sans-serif;color: red;">
+            Login failed...</h3>
         </div>
       </div>
     </div>
@@ -88,7 +95,57 @@
 </template>
 
 <script>
+import axios from 'axios';
+import * as bootstrap from "bootstrap";
+export default {
+  name: "Navbar",
+  data() {
+    return {
+      email: "",
+      password: "",
+      error: null
+    };
+  },
+  mounted() {
+    const modalEl = document.getElementById("loginModal");
+    this.loginModal = new bootstrap.Modal(modalEl, {
+      backdrop: "static",
+      keyboard: false,
+    });
+  },
 
+  methods: {
+    showLoginModal() {
+      this.loginModal.show();
+    },
+    login() {
+      const user = {
+        email: this.email,
+        password: this.password
+      };
+
+      axios.post("http://localhost:9000/login", user)
+        .then((res) => {
+          if (res.data.token) {
+            this.error = false;
+            localStorage.setItem("token", res.data.token);
+            localStorage.setItem("user", JSON.stringify(res.data.userData));
+
+
+            this.loginModal.hide();
+
+            this.$router.push({ name: "Home" });
+          } else if (res.data.error) {
+            this.error = true;
+          }
+        })
+        .catch((err) => {
+          console.error("Login error:", err);
+          this.error = true;
+        });
+    }
+  }
+};
 </script>
 
 <style scoped>
