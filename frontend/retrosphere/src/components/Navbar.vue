@@ -12,7 +12,7 @@
 
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
-        <router-link to="/add">
+        <router-link v-if="store.isLoggedIn" to="/add">
           <i id="add_post" class="bi bi-dpad-fill"></i>
         </router-link>
 
@@ -42,12 +42,13 @@
           </li>
         </ul>
 
-        <router-link to="/profile">
+        <router-link v-if="store.isLoggedIn" to="/profile">
           <i id="profile" class="bi bi-person-bounding-box"></i>
         </router-link>
 
 
-        <button type="button" class="btn" id="login" @click="showLoginModal">Login</button>
+        <button v-if="!store.isLoggedIn" type="button" class="btn" id="login" @click="showLoginModal">Login</button>
+        <button v-if="store.isLoggedIn" type="button" class="btn" id="login" @click="logout">Logout</button>
 
 
       </div>
@@ -95,6 +96,7 @@
 </template>
 
 <script>
+import { store } from "../store"
 import axios from 'axios';
 import * as bootstrap from "bootstrap";
 export default {
@@ -128,11 +130,13 @@ export default {
         .then((res) => {
           if (res.data.token) {
             this.error = false;
-            localStorage.setItem("token", res.data.token);
-            localStorage.setItem("user", JSON.stringify(res.data.userData));
+            store.login(res.data.userData, res.data.token);
 
 
             this.loginModal.hide();
+            this.email="";
+            this.password="";
+            this.error=null;
 
             this.$router.push({ name: "Home" });
           } else if (res.data.error) {
@@ -143,6 +147,15 @@ export default {
           console.error("Login error:", err);
           this.error = true;
         });
+    },
+    logout() {
+      store.logout();
+      this.$router.push({ name: "Home" });
+    }
+  },
+  computed: {
+    store() {
+      return store;
     }
   }
 };
