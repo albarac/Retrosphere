@@ -3,6 +3,7 @@ import Home from '../views/Home.vue';
 import Add from '../views/Add.vue';
 import SignUp from '../views/SignUp.vue';
 import PostDetails from '../views/PostDetails.vue';
+import Profile from '../views/Profile.vue';
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
     name: 'PostDetails',
     component: PostDetails,
     props: true
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: Profile
   }
 ];
 

@@ -22,25 +22,40 @@ async function connectDB() {
   console.log("Connected to MongoDB");
 
   app.post("/register", async (req, res) => {
+  try {
+    const { username, email, password, image } = req.body;
+
+    const existingUser = await db.collection("Users").findOne({
+      $or: [{ email }, { username }]
+    });
+
+    if (existingUser) {
+      return res.status(400).json({
+        error: true,
+        message: existingUser.email === email ? "Email already exists" : "Username already exists"
+      });
+    }
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
     const newUser = {
-      username: req.body.username,
-      email: req.body.email,
-      password: bcrypt.hashSync(req.body.password, 10),
-      image: req.body.image,
+      username,
+      email,
+      password: hashedPassword,
+      image
     };
 
-    let check = await db
-      .collection("Users")
-      .find({ email: newUser.email })
-      .count();
-    if (check > 0) {
-      console.log("Korisnik postoji");
-    } else {
-      let result = await db.collection("Users").insertOne(newUser);
-      console.log("Result", result);
-      res.json(result);
-    }
-  });
+    const result = await db.collection("Users").insertOne(newUser);
+
+    res.json({
+      success: true,
+      userId: result.insertedId,
+      message: "User registered successfully"
+    });
+  } catch (err) {
+    console.error("Register error:", err);
+    res.status(500).json({ error: true, message: "Server error" });
+  }
+});
 
   app.post("/login", async (req, res) => {
     try {
@@ -77,6 +92,28 @@ async function connectDB() {
       return res
         .status(500)
         .json({ error: "Server error. Please try again later." });
+    }
+  });
+
+  app.put("/users/:id/avatar", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { avatar } = req.body;
+
+      const result = await db
+        .collection("Users")
+        .updateOne({ _id: new ObjectId(id) }, { $set: { image: avatar } });
+
+      if (result.modifiedCount === 1) {
+        return res.json({ success: true, avatar });
+      } else {
+        return res
+          .status(400)
+          .json({ success: false, message: "Update failed" });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, message: "Server error" });
     }
   });
 }

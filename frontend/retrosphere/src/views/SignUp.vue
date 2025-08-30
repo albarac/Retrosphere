@@ -60,10 +60,19 @@ export default {
                 }
                 axios.post('http://localhost:9000/register', newUser)
                     .then(res => {
-                        console.log("Response: ", res);
-                        this.$router.push({ name: 'Home' })
+                        if (res.data.success) {
+                            this.error = false;
+                            this.$router.push({ name: 'Home' });
+                        }
                     })
-                this.error = false;
+                    .catch(err => {
+                        this.error = true;
+                        if (err.response && err.response.data?.message) {
+                            console.error("Registration error:", err.response.data.message);
+                        } else {
+                            console.error("Registration error:", err);
+                        }
+                    });
             } else {
                 this.error = true;
             }
