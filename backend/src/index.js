@@ -22,40 +22,43 @@ async function connectDB() {
   console.log("Connected to MongoDB");
 
   app.post("/register", async (req, res) => {
-  try {
-    const { username, email, password, image } = req.body;
+    try {
+      const { username, email, password, image } = req.body;
 
-    const existingUser = await db.collection("Users").findOne({
-      $or: [{ email }, { username }]
-    });
-
-    if (existingUser) {
-      return res.status(400).json({
-        error: true,
-        message: existingUser.email === email ? "Email already exists" : "Username already exists"
+      const existingUser = await db.collection("Users").findOne({
+        $or: [{ email }, { username }],
       });
+
+      if (existingUser) {
+        return res.status(400).json({
+          error: true,
+          message:
+            existingUser.email === email
+              ? "Email already exists"
+              : "Username already exists",
+        });
+      }
+      const hashedPassword = bcrypt.hashSync(password, 10);
+
+      const newUser = {
+        username,
+        email,
+        password: hashedPassword,
+        image,
+      };
+
+      const result = await db.collection("Users").insertOne(newUser);
+
+      res.json({
+        success: true,
+        userId: result.insertedId,
+        message: "User registered successfully",
+      });
+    } catch (err) {
+      console.error("Register error:", err);
+      res.status(500).json({ error: true, message: "Server error" });
     }
-    const hashedPassword = bcrypt.hashSync(password, 10);
-
-    const newUser = {
-      username,
-      email,
-      password: hashedPassword,
-      image
-    };
-
-    const result = await db.collection("Users").insertOne(newUser);
-
-    res.json({
-      success: true,
-      userId: result.insertedId,
-      message: "User registered successfully"
-    });
-  } catch (err) {
-    console.error("Register error:", err);
-    res.status(500).json({ error: true, message: "Server error" });
-  }
-});
+  });
 
   app.post("/login", async (req, res) => {
     try {
@@ -111,6 +114,32 @@ async function connectDB() {
           .status(400)
           .json({ success: false, message: "Update failed" });
       }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  });
+
+  app.post("/newPost", async (req, res) => {
+    try {
+      const { title, content, userId } = req.body;
+
+      if (!title || !content || !userId) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Missing fields" });
+      }
+
+      const newPost = {
+        title,
+        content,
+        userId: userId,
+        date: new Date(),
+        comments: [],
+      };
+
+      const result = await db.collection("Posts").insertOne(newPost);
+      res.json({ success: true, postId: result.insertedId });
     } catch (err) {
       console.error(err);
       res.status(500).json({ success: false, message: "Server error" });
