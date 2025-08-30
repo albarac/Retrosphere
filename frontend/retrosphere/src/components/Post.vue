@@ -1,29 +1,43 @@
 <template>
-        <div class="post">
-      <div class="post-left">
-        <img src="https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg" alt="Avatar"
-          class="avatar">
-        <div class="username">JTH-QA</div>
-      </div>
+  <div class="post">
+    <div class="post-left">
+      <img :src="`/avatars/${post.userInfo.image}`" alt="Avatar" class="avatar">
+      <div class="username">{{ post.userInfo.username }}</div>
+    </div>
 
-      <div class="post-right">
-        <div class="post-header">
-          <h6>Return of the king!</h6>
-          <h7 style="font-style: italic;">21/08/2025</h7>
-        </div>
-        <div class="post-content">
-          Please leave your feedback here. Please leave your feedback here. Please leave your feedback here. Please
-          leave your feedback here. Please leave your feedback here. Please leave your feedback here. Please leave your
-          feedback here. Please leave your feedback here. Please leave your feedback here. Please leave your feedback
-          here. Please leave your feedback here.
-        </div>
-        <div class="buttons">
-          <i id="edit" class="bi bi-pen-fill"></i>
-          <i id="delete" class="bi bi-trash-fill"></i>
-        </div>
+    <div class="post-right">
+      <div class="post-header">
+        <h6>{{ post.title }}</h6>
+        <h7 style="font-style: italic;">{{ formattedDate }}</h7>
+      </div>
+      <div class="post-content">
+        {{ post.content }}
+      </div>
+      <div class="buttons" v-if="store.user && store.user._id === post.userId">
+        <i id="edit" class="bi bi-pen-fill"></i>
+        <i id="delete" class="bi bi-trash-fill"></i>
       </div>
     </div>
+  </div>
 </template>
+
+<script>
+import { store } from '../store';
+export default {
+  name: "Post",
+  props: {
+    post: { type: Object, required: true }
+  },
+  computed: {
+    formattedDate() {
+      return new Date(this.post.date).toLocaleDateString();
+    },
+      store() {
+      return store; // access reactive store in template
+    }
+  }
+};
+</script>
 
 <style scoped>
 .post {
@@ -38,7 +52,7 @@
   transition: 1s;
 }
 
-.post:hover{
+.post:hover {
   cursor: pointer;
   background: #d1d1d5;
 }
@@ -54,7 +68,7 @@
 .avatar {
   width: 70px;
   height: 70px;
-  border-radius: 50%;
+
   margin-bottom: 10px;
 }
 

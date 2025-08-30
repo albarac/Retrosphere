@@ -146,6 +146,43 @@ async function connectDB() {
       res.status(500).json({ success: false, message: "Server error" });
     }
   });
+
+  app.get("/posts", async (req, res) => {
+    try {
+      const posts = await db
+        .collection("Posts")
+        .aggregate([
+          {
+            $addFields: {
+              userIdObj: { $toObjectId: "$userId" },
+            },
+          },
+          {
+            $lookup: {
+              from: "Users",
+              localField: "userIdObj",
+              foreignField: "_id",
+              as: "userInfo",
+            },
+          },
+          { $unwind: "$userInfo" },
+
+          {
+            $project: {
+              userIdObj: 0,
+              "userInfo.password": 0,
+            },
+          },
+          { $sort: { date: -1 } },
+        ])
+        .toArray();
+
+      res.json(posts);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Something went wrong" });
+    }
+  });
 }
 
 connectDB().then(() => {
