@@ -6,7 +6,7 @@
                 <h2>User Profile</h2>
             </div>
 
-            <div style="display: flex; flex-direction: row; gap: 20px; align-items: center;">
+            <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;justify-content:center">
                 <h5>Username: {{ store.user?.username || "Guest" }}</h5>
                 <h5>Email: {{ store.user?.email || "guest@gmail.com" }}</h5>
             </div>
