@@ -17,29 +17,23 @@
         </router-link>
 
         <ul class="navbar-nav mx-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Dropdown 1
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
-              aria-expanded="false">
-              Dropdown 2
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action A</a></li>
-              <li><a class="dropdown-item" href="#">Action B</a></li>
-              <li><a class="dropdown-item" href="#">Action C</a></li>
-            </ul>
-          </li>
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item">
+              <router-link class="nav-link text-white" to="/category/pc">PC</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link text-white" to="/category/sony">Sony</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link text-white" to="/category/nintendo">Nintendo</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link text-white" to="/category/sega">Sega</router-link>
+            </li>
+            <li class="nav-item">
+              <router-link class="nav-link text-white" to="/category/atari">Atari</router-link>
+            </li>
+          </ul>
         </ul>
 
         <router-link v-if="store.isLoggedIn" to="/profile">
@@ -134,9 +128,9 @@ export default {
 
 
             this.loginModal.hide();
-            this.email="";
-            this.password="";
-            this.error=null;
+            this.email = "";
+            this.password = "";
+            this.error = null;
 
             this.$router.push({ name: "Home" });
           } else if (res.data.error) {
@@ -216,5 +210,8 @@ input::placeholder {
   font-size: 20px;
   cursor: pointer;
   margin-right: 20px;
+}
+.navbar-nav .nav-item {
+  margin-right: 15px;
 }
 </style>

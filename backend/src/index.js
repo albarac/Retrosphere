@@ -122,9 +122,9 @@ async function connectDB() {
 
   app.post("/newPost", async (req, res) => {
     try {
-      const { title, content, userId } = req.body;
+      const { title, content, category, userId } = req.body;
 
-      if (!title || !content || !userId) {
+      if (!title || !content || !userId || !category) {
         return res
           .status(400)
           .json({ success: false, message: "Missing fields" });
@@ -133,7 +133,8 @@ async function connectDB() {
       const newPost = {
         title,
         content,
-        userId: userId,
+        category,
+        userId,
         date: new Date(),
         comments: [],
       };

@@ -3,6 +3,13 @@
             <div
                 style="width: 100%; font-family: 'Pixelify Sans', sans-serif; font-size: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
                 <label for="add_text" class="form-label">Cast your thoughts into the fire!</label>
+                <select v-model="category" id="select" class="form-select">
+                    <option value="pc">PC</option>
+                    <option value="sony">Sony</option>
+                    <option value="nintendo">Nintendo</option>
+                    <option value="sega">Sega</option>
+                    <option value="atari">Atari</option>
+                </select>
                 <input v-model="title" type="text" class="form-control" id="title" placeholder="Title">
                 <textarea v-model="content" class="form-control" id="add_text" placeholder="Content"
                     rows="10"></textarea>
@@ -13,7 +20,7 @@
                     <i id="cancel" @click="cancel" class="bi bi-crosshair" data-bs-toggle="tooltip" title="Cancel"></i>
                 </div>
 
-                <h4 v-if="this.error===false">Successfuly posted !</h4>
+                <h4 v-if="this.error === false">Successfuly posted !</h4>
                 <h4 v-if="this.error" style="color: red;">Posting failed !</h4>
 
             </div>
@@ -28,36 +35,38 @@ export default {
         return {
             title: "",
             content: "",
+            category: "pc",
             error: null
         }
     },
     methods: {
         addPost() {
-            if (this.title.trim() === "" || this.content.trim() === "") {
+            if (this.title.trim() === "" || this.content.trim() === "" || !this.category) {
                 this.error = true
                 return;
             }
             let post = {
                 title: this.title,
                 content: this.content,
+                category: this.category,
                 date: new Date(),
                 userId: store.user._id,
                 comments: []
             };
-            axios.post("http://localhost:9000/newPost", post).then((res) => {
-                console.log("Response post: ", res.data);
-                if (res.data) {
-                    this.$router.push({ name: "Home" });
-                } else {
-                    console.log("Error posting data!");
-                }
-            });
+            axios.post("http://localhost:9000/newPost", post)
+                .then((res) => {
+                    if (res.data.success) {
+                        this.$router.push({ name: "Home" });
+                    } else {
+                        console.log("Error posting data!");
+                        this.error = true;
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    this.error = true;
+                });
             this.error = false;
-        },
-        cancel() {
-            this.title = "";
-            this.content = "";
-            this.$router.push({ name: "Home" });
         }
     },
     computed: {
@@ -106,6 +115,17 @@ export default {
 }
 
 #title {
+    width: 80%;
+    font-size: 18px;
+    border: 3px solid #333;
+    border-radius: 6px;
+    margin: 10px 0;
+    color: #000000;
+    font-family: "Jersey 15", sans-serif;
+    font-size: 20px;
+}
+
+#select {
     width: 80%;
     font-size: 18px;
     border: 3px solid #333;
