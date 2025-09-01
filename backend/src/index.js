@@ -183,6 +183,138 @@ async function connectDB() {
       res.status(500).json({ error: "Something went wrong" });
     }
   });
+
+  app.get("/posts/:id", async (req, res) => {
+    try {
+      const postId = req.params.id;
+
+      const post = await db
+        .collection("Posts")
+        .aggregate([
+          { $match: { _id: new ObjectId(postId) } },
+
+          {
+            $addFields: {
+              userIdObj: { $toObjectId: "$userId" },
+              comments: {
+                $map: {
+                  input: "$comments",
+                  as: "c",
+                  in: {
+                    $mergeObjects: [
+                      "$$c",
+                      { userIdObj: { $toObjectId: "$$c.userId" } },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+
+          {
+            $lookup: {
+              from: "Users",
+              localField: "userIdObj",
+              foreignField: "_id",
+              as: "userInfo",
+            },
+          },
+          { $unwind: "$userInfo" },
+
+          { $unwind: { path: "$comments", preserveNullAndEmptyArrays: true } },
+          {
+            $lookup: {
+              from: "Users",
+              localField: "comments.userIdObj",
+              foreignField: "_id",
+              as: "comments.userInfo",
+            },
+          },
+          {
+            $unwind: {
+              path: "$comments.userInfo",
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+
+          {
+            $project: {
+              userIdObj: 0,
+              "userInfo.password": 0,
+              "comments.userIdObj": 0,
+              "comments.userInfo.password": 0,
+            },
+          },
+
+          {
+            $group: {
+              _id: "$_id",
+              title: { $first: "$title" },
+              content: { $first: "$content" },
+              category: { $first: "$category" },
+              userId: { $first: "$userId" },
+              userInfo: { $first: "$userInfo" },
+              date: { $first: "$date" },
+              comments: { $push: "$comments" },
+            },
+          },
+        ])
+        .toArray();
+
+      if (!post || post.length === 0) {
+        return res.status(404).json({ error: "Post not found" });
+      }
+
+      res.json(post[0]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
+    }
+  });
+
+  app.post("/posts/:id/comments", async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const { userId, content } = req.body;
+
+    if (!content || !userId) {
+      return res.status(400).json({ error: "Missing comment content or userId" });
+    }
+
+    const newComment = {
+      _id: new ObjectId(),
+      userId,
+      content,
+      date: new Date(),
+    };
+
+    const result = await db.collection("Posts").updateOne(
+      { _id: new ObjectId(postId) },
+      { $push: { comments: newComment } }
+    );
+
+    if (result.modifiedCount === 0) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+    
+    const user = await db.collection("Users").findOne(
+      { _id: new ObjectId(userId) },
+      { projection: { password: 0, email: 0 } }
+    );
+
+    newComment.userInfo = {
+      _id: user._id,
+      username: user.username,
+      image: user.image,
+    };
+
+    res.json({ message: "Comment added", comment: newComment });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
 }
 
 connectDB().then(() => {

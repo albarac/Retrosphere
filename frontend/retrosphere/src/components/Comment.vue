@@ -1,31 +1,37 @@
 <template>
     <div class="comment">
         <div class="comment-left">
-            <img src="https://avatarfiles.alphacoders.com/364/364556.jpg" alt="Avatar"
-                class="avatar">
-            <div class="username">JTH-QA</div>
+            <img :src="`/avatars/${comment.userInfo.image}`" alt="Avatar" class="avatar">
+            <div class="username">{{ comment.userInfo.username }}</div>
         </div>
 
         <div class="comment-right">
             <div class="comment-header">
-                <h7 style="font-style: italic;">21/08/2025</h7>
+                <h7 style="font-style: italic;">{{ formattedDate }}</h7>
             </div>
-            <div class="comment-content">
-                Please leave your feedback here. Please leave your feedback here. Please leave your feedback here.
-                Please
-                leave your feedback here. Please leave your feedback here. Please leave your feedback here. Please leave
-                your
-                feedback here. Please leave your feedback here. Please leave your feedback here. Please leave your
-                feedback
-                here. Please leave your feedback here.
-            </div>
-            <div class="buttons">
+            <div class="comment-content">{{ comment.content }}</div>
+            <div class="buttons" v-if="canEdit">
                 <i id="edit" class="bi bi-pen-fill"></i>
                 <i id="delete" class="bi bi-trash-fill"></i>
             </div>
         </div>
     </div>
 </template>
+
+<script>
+export default {
+    name: "Comment",
+    props: {
+        comment: { type: Object, required: true },
+        canEdit: { type: Boolean, default: false }
+    },
+    computed: {
+        formattedDate() {
+            return new Date(this.comment.date).toLocaleDateString();
+        }
+    }
+};
+</script>
 
 <style scoped>
 .comment {
@@ -34,15 +40,8 @@
     border: 3px solid #333;
     border-radius: 6px;
     margin: 10px 0;
-    color: #000000;
-    font-family: Arial, sans-serif;
     width: 100%;
     transition: 1s;
-}
-
-.comment:hover {
-    cursor: pointer;
-    background: #d1d1d5;
 }
 
 .comment-left {
@@ -50,13 +49,11 @@
     padding: 15px;
     text-align: center;
     border-right: 1px solid #333;
-    font-family: "Pixelify Sans", sans-serif;
 }
 
 .avatar {
     width: 70px;
     height: 70px;
-    border-radius: 50%;
     margin-bottom: 10px;
 }
 
@@ -65,17 +62,11 @@
     color: #0f380f;
 }
 
-.role {
-    font-size: 14px;
-    color: #ccc;
-}
-
 .comment-right {
     width: 100%;
     padding: 5px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
 }
 
 .comment-header {
@@ -83,21 +74,14 @@
     justify-content: space-between;
     margin-bottom: 10px;
     font-size: 20px;
-    color: #000000;
     border-bottom: 1px solid #333;
     padding: 5px;
-    font-family: "Pixelify Sans", sans-serif;
 }
 
 .comment-content {
     font-size: 20px;
     line-height: 1.5;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
     text-align: justify;
-    font-family: "Jersey 15", sans-serif;
 }
 
 #delete {

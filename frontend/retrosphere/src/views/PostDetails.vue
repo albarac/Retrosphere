@@ -2,24 +2,17 @@
     <div class="details">
         <div class="post">
             <div class="post-left">
-                <img src="https://pbs.twimg.com/profile_images/794107415876747264/g5fWe6Oh_400x400.jpg" alt="Avatar"
-                    class="avatar">
-                <div class="username">JTH-QA</div>
+                <img :src="`/avatars/${post.userInfo.image}`" alt="Avatar" class="avatar">
+                <div class="username">{{ post.userInfo.username }}</div>
             </div>
 
             <div class="post-right">
                 <div class="post-header">
-                    <h6>Return of the king!</h6>
-                    <h7 style="font-style: italic;">21/08/2025</h7>
+                    <h6>{{ post.title }}</h6>
+                    <h7 style="font-style: italic;">{{ formattedDate }}</h7>
                 </div>
                 <div class="post-content">
-                    Please leave your feedback here. Please leave your feedback here. Please leave your feedback here.
-                    Please
-                    leave your feedback here. Please leave your feedback here. Please leave your feedback here. Please
-                    leave your
-                    feedback here. Please leave your feedback here. Please leave your feedback here. Please leave your
-                    feedback
-                    here. Please leave your feedback here.
+                    {{ post.content }}
                 </div>
             </div>
         </div>
@@ -27,18 +20,13 @@
         <div style="border: solid 1px #0f380f; width: 90%;margin-top: 20px;margin-bottom: 20px;"></div>
 
         <div id="comments" class="overflow-auto">
-            <Comment />
-            <Comment />
-            <Comment />
-            <Comment />
-            <Comment />
-            <Comment />
+            <Comment v-for="comment in filteredComments" :key="comment._id" :comment="comment"   :canEdit="store.user && store.user._id === comment.userId" />
         </div>
 
-        <div class="post_comment">
-            <textarea rows="5" placeholder="Write a comment..."
+        <div v-if="store.isLoggedIn" class="post_comment">
+            <textarea v-model="newComment" rows="5" placeholder="Write a comment..."
                 style="width: 100%; height: 150px; margin-top: 20px;font-size: 20px; border-radius: 6px; border: 2px solid #333; padding: 10px; box-sizing: border-box; font-family: 'Jersey 15', sans-serif;"></textarea>
-            <button
+            <button @click="submitComment"
                 style="margin-top: 10px; padding: 10px 20px; background-color: #0f380f; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'Pixelify Sans', sans-serif;">Post
                 Comment</button>
         </div>
@@ -48,10 +36,56 @@
 
 <script>
 import Comment from '../components/Comment.vue';
+import axios from 'axios';
+import { store } from '../store';
 export default {
     name: 'PostDetails',
     components: {
         Comment
+    },
+    data() {
+        return {
+            post: null,
+            error: null,
+            newComment: ''
+        };
+    },
+    computed: {
+        store() {
+            return store;
+        },
+        filteredComments() {
+            return this.post && this.post.comments
+                ? this.post.comments.filter(c => c.userInfo)
+                : [];
+        }
+    },
+    methods: {
+        async submitComment() {
+            if (!this.newComment.trim()) return;
+
+            try {
+                const res = await axios.post(`http://localhost:9000/posts/${this.post._id}/comments`, {
+                    userId: store.user._id,
+                    content: this.newComment
+                });
+
+                this.post.comments.push(res.data.comment);
+                this.newComment = '';
+            } catch (err) {
+                console.error("Failed to add comment:", err);
+            }
+        }
+    },
+    async created() {
+        const postId = this.$route.params.id;
+        try {
+            const res = await axios.get(`http://localhost:9000/posts/${postId}`);
+            this.post = res.data;
+        } catch (err) {
+            console.error(err);
+            this.error = 'Failed to fetch post';
+        }
     }
 }
 </script>
@@ -91,7 +125,6 @@ export default {
 .avatar {
     width: 70px;
     height: 70px;
-    border-radius: 50%;
     margin-bottom: 10px;
 }
 

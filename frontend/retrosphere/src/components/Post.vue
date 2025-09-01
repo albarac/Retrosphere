@@ -1,5 +1,5 @@
 <template>
-  <div class="post">
+  <div class="post" @click="goToDetails">
     <div class="post-left">
       <img :src="`/avatars/${post.userInfo.image}`" alt="Avatar" class="avatar">
       <div class="username">{{ post.userInfo.username }}</div>
@@ -23,6 +23,7 @@
 
 <script>
 import { store } from '../store';
+import { useRouter } from 'vue-router';
 export default {
   name: "Post",
   props: {
@@ -32,8 +33,13 @@ export default {
     formattedDate() {
       return new Date(this.post.date).toLocaleDateString();
     },
-      store() {
-      return store; // access reactive store in template
+    store() {
+      return store;
+    }
+  },
+  methods: {
+    goToDetails() {
+      this.$router.push({ name: 'PostDetails', params: { id: this.post._id } });
     }
   }
 };
