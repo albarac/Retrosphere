@@ -20,7 +20,8 @@
         <div style="border: solid 1px #0f380f; width: 90%;margin-top: 20px;margin-bottom: 20px;"></div>
 
         <div id="comments" class="overflow-auto">
-            <Comment v-for="comment in filteredComments" :key="comment._id" :comment="comment"   :canEdit="store.user && store.user._id === comment.userId" />
+            <Comment v-for="comment in filteredComments" :key="comment._id" :comment="comment"
+                :canEdit="store.user && store.user._id === comment.userId" @commentUpdated="updateComment" />
         </div>
 
         <div v-if="store.isLoggedIn" class="post_comment">
@@ -77,6 +78,12 @@ export default {
                 this.newComment = '';
             } catch (err) {
                 console.error("Failed to add comment:", err);
+            }
+        },
+        updateComment(updated) {
+            const index = this.post.comments.findIndex(c => c._id === updated.id);
+            if (index !== -1) {
+                this.post.comments[index].content = updated.content;
             }
         }
     },

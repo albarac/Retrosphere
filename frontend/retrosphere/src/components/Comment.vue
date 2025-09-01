@@ -9,25 +9,70 @@
             <div class="comment-header">
                 <h7 style="font-style: italic;">{{ formattedDate }}</h7>
             </div>
-            <div class="comment-content">{{ comment.content }}</div>
+            <div v-if="!editing" class="comment-content">{{ comment.content }}</div>
+            <textarea id="edit_textarea" v-else v-model="editedContent" rows="3" class="edit-textarea"></textarea>
+
             <div class="buttons" v-if="canEdit">
-                <i id="edit" class="bi bi-pen-fill"></i>
-                <i id="delete" class="bi bi-trash-fill"></i>
+                <i v-if="!editing" id="edit" class="bi bi-pen-fill" @click="startEdit"></i>
+
+                <i v-if="editing" class="bi bi-check-circle-fill" id="save" @click="saveEdit"></i>
+                <i v-if="editing" class="bi bi-x-circle-fill" id="cancel" @click="cancelEdit"></i>
+
+                <i id="delete" class="bi bi-trash-fill" @click="$emit('deleteComment', comment._id)"></i>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
     name: "Comment",
     props: {
         comment: { type: Object, required: true },
         canEdit: { type: Boolean, default: false }
     },
+    data() {
+        return {
+            editing: false,
+            editedContent: this.comment.content,
+        };
+    },
     computed: {
         formattedDate() {
             return new Date(this.comment.date).toLocaleDateString();
+        }
+    },
+    methods: {
+        startEdit() {
+            this.editing = true;
+            this.editedContent = this.comment.content;
+        },
+     async saveEdit() {
+    try {
+      const res = await axios.patch(`http://localhost:9000/comments/${this.comment._id}`, {
+        content: this.editedContent
+      });
+
+      if (res.data?.success) {
+      
+        this.comment.content = this.editedContent;
+        this.editing = false;
+
+        
+        this.$emit("commentUpdated", {
+          id: this.comment._id,
+          content: this.editedContent
+        });
+      }
+    } catch (err) {
+      console.error("Failed to update comment:", err);
+    }
+  },
+        cancelEdit() {
+            this.editedContent = this.comment.content;
+            this.editing = false;
         }
     }
 };
@@ -102,5 +147,26 @@ export default {
     gap: 20px;
     margin-top: 10px;
     padding-right: 10px;
+}
+#save {
+  font-size: 20px;     
+  color: green;       
+  transition: transform 0.2s;
+}
+#save:hover {
+  transform: scale(1.2);
+}
+
+#cancel {
+  font-size: 20px;    
+  color: red;      
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+#cancel:hover {
+  transform: scale(1.2);
+}
+#edit_textarea{
+    padding: 10px;
 }
 </style>
