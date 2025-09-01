@@ -345,6 +345,27 @@ async function connectDB() {
       res.status(500).json({ error: "Server error" });
     }
   });
+
+  app.delete("/posts/:id", async (req, res) => {
+    try {
+      const postId = req.params.id;
+
+      const result = await db
+        .collection("Posts")
+        .deleteOne({ _id: new ObjectId(postId) });
+
+      if (result.deletedCount === 0) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Post not found" });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, error: "Server error" });
+    }
+  });
 }
 
 connectDB().then(() => {

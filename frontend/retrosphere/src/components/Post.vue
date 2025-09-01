@@ -15,19 +15,39 @@
       </div>
       <div class="buttons" v-if="store.user && store.user._id === post.userId">
         <i @click.stop="goEditPost" id="edit" class="bi bi-pen-fill"></i>
-        <i id="delete" class="bi bi-trash-fill"></i>
+        <i @click.stop="showDeleteModal = true" id="delete" class="bi bi-trash-fill"></i>
       </div>
     </div>
+
+
+    <div v-if="showDeleteModal" class="modal-overlay">
+      <div class="modal-content">
+        <h5>Are you sure?</h5>
+        <p>This action will permanently delete the post.</p>
+        <div class="modal-buttons" style="display: flex; justify-content: center; gap: 10px;">
+          <button class="btn btn-danger" @click.stop="confirmDelete">Delete</button>
+          <button class="btn btn-secondary" @click.stop="showDeleteModal = false">Cancel</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
 import { store } from '../store';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 export default {
   name: "Post",
   props: {
     post: { type: Object, required: true }
+  },
+  data() {
+    return {
+      showDeleteModal: false,
+      deleting: false
+    };
   },
   computed: {
     formattedDate() {
@@ -41,8 +61,23 @@ export default {
     goToDetails() {
       this.$router.push({ name: 'PostDetails', params: { id: this.post._id } });
     },
-    goEditPost(){
+    goEditPost() {
       this.$router.push({ name: 'EditPost', params: { id: this.post._id } });
+    },
+    async confirmDelete() {
+      if (this.deleting) return;
+      this.deleting = true;
+      try {
+        const res = await axios.delete(`http://localhost:9000/posts/${this.post._id}`);
+        if (res.data?.success) {
+          this.$emit("postDeleted", this.post._id);
+        }
+      } catch (err) {
+        console.error("Failed to delete post:", err);
+      } finally {
+        this.deleting = false;
+        this.showDeleteModal = false;
+      }
     }
   }
 };
@@ -139,5 +174,13 @@ export default {
   gap: 20px;
   margin-top: 10px;
   padding-right: 10px;
+}
+
+
+.modal-content {
+  background-color: #adadb1;
+  color: black;
+  padding: 15px;
+  font-family: "Pixelify Sans", sans-serif;
 }
 </style>

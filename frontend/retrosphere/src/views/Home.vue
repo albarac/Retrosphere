@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Post v-for="post in posts" :key="post._id" :post="post" />
+    <Post v-for="post in posts" :key="post._id" :post="post" @postDeleted="handlePostDeleted" />
   </div>
 </template>
 
@@ -26,6 +26,9 @@ export default {
     }
   },
   methods: {
+    handlePostDeleted(postId) {
+      this.posts = this.posts.filter(p => p._id !== postId);
+    }
   },
   computed: {
     store() {
