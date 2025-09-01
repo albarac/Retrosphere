@@ -58,6 +58,9 @@ export default {
             return this.post && this.post.comments
                 ? this.post.comments.filter(c => c.userInfo)
                 : [];
+        },
+        formattedDate() {
+            return new Date(this.post.date).toLocaleDateString();
         }
     },
     methods: {
