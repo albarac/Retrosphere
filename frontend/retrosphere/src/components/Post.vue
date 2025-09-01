@@ -14,7 +14,7 @@
         {{ post.content }}
       </div>
       <div class="buttons" v-if="store.user && store.user._id === post.userId">
-        <i id="edit" class="bi bi-pen-fill"></i>
+        <i @click.stop="goEditPost" id="edit" class="bi bi-pen-fill"></i>
         <i id="delete" class="bi bi-trash-fill"></i>
       </div>
     </div>
@@ -40,6 +40,9 @@ export default {
   methods: {
     goToDetails() {
       this.$router.push({ name: 'PostDetails', params: { id: this.post._id } });
+    },
+    goEditPost(){
+      this.$router.push({ name: 'EditPost', params: { id: this.post._id } });
     }
   }
 };

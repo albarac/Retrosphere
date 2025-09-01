@@ -272,49 +272,79 @@ async function connectDB() {
     }
   });
 
+  app.put("/posts/:id", async (req, res) => {
+    try {
+      const postId = req.params.id;
+      const { title, content, category } = req.body;
+
+      const result = await db
+        .collection("Posts")
+        .updateOne(
+          { _id: new ObjectId(postId) },
+          { $set: { title, content, category } }
+        );
+
+      if (result.modifiedCount === 0) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Post not found" });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, error: "Server error" });
+    }
+  });
+
   app.post("/posts/:id/comments", async (req, res) => {
-  try {
-    const postId = req.params.id;
-    const { userId, content } = req.body;
+    try {
+      const postId = req.params.id;
+      const { userId, content } = req.body;
 
-    if (!content || !userId) {
-      return res.status(400).json({ error: "Missing comment content or userId" });
+      if (!content || !userId) {
+        return res
+          .status(400)
+          .json({ error: "Missing comment content or userId" });
+      }
+
+      const newComment = {
+        _id: new ObjectId(),
+        userId,
+        content,
+        date: new Date(),
+      };
+
+      const result = await db
+        .collection("Posts")
+        .updateOne(
+          { _id: new ObjectId(postId) },
+          { $push: { comments: newComment } }
+        );
+
+      if (result.modifiedCount === 0) {
+        return res.status(404).json({ error: "Post not found" });
+      }
+
+      const user = await db
+        .collection("Users")
+        .findOne(
+          { _id: new ObjectId(userId) },
+          { projection: { password: 0, email: 0 } }
+        );
+
+      newComment.userInfo = {
+        _id: user._id,
+        username: user.username,
+        image: user.image,
+      };
+
+      res.json({ message: "Comment added", comment: newComment });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Server error" });
     }
-
-    const newComment = {
-      _id: new ObjectId(),
-      userId,
-      content,
-      date: new Date(),
-    };
-
-    const result = await db.collection("Posts").updateOne(
-      { _id: new ObjectId(postId) },
-      { $push: { comments: newComment } }
-    );
-
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ error: "Post not found" });
-    }
-    
-    const user = await db.collection("Users").findOne(
-      { _id: new ObjectId(userId) },
-      { projection: { password: 0, email: 0 } }
-    );
-
-    newComment.userInfo = {
-      _id: user._id,
-      username: user.username,
-      image: user.image,
-    };
-
-    res.json({ message: "Comment added", comment: newComment });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
+  });
 }
 
 connectDB().then(() => {
