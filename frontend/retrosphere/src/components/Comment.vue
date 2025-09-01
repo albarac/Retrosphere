@@ -18,7 +18,20 @@
                 <i v-if="editing" class="bi bi-check-circle-fill" id="save" @click="saveEdit"></i>
                 <i v-if="editing" class="bi bi-x-circle-fill" id="cancel" @click="cancelEdit"></i>
 
-                <i id="delete" class="bi bi-trash-fill" @click="$emit('deleteComment', comment._id)"></i>
+                <i @click.stop="showDeleteModal=true" id="delete" class="bi bi-trash-fill" @click="$emit('deleteComment', comment._id)"></i>
+            </div>
+        </div>
+
+
+
+        <div v-if="showDeleteModal" class="modal-overlay">
+            <div class="modal-content">
+                <h5>Are you sure?</h5>
+                <p>This action will permanently delete the comment.</p>
+                <div class="modal-buttons" style="display: flex; justify-content: center; gap: 10px;">
+                    <button class="btn btn-danger" @click.stop="confirmDelete">Delete</button>
+                    <button class="btn btn-secondary" @click.stop="showDeleteModal = false">Cancel</button>
+                </div>
             </div>
         </div>
     </div>
@@ -37,6 +50,8 @@ export default {
         return {
             editing: false,
             editedContent: this.comment.content,
+            showDeleteModal: false,
+            deleting: false
         };
     },
     computed: {
@@ -49,31 +64,48 @@ export default {
             this.editing = true;
             this.editedContent = this.comment.content;
         },
-     async saveEdit() {
-    try {
-      const res = await axios.patch(`http://localhost:9000/comments/${this.comment._id}`, {
-        content: this.editedContent
-      });
+        async saveEdit() {
+            try {
+                const res = await axios.patch(`http://localhost:9000/comments/${this.comment._id}`, {
+                    content: this.editedContent
+                });
 
-      if (res.data?.success) {
-      
-        this.comment.content = this.editedContent;
-        this.editing = false;
+                if (res.data?.success) {
 
-        
-        this.$emit("commentUpdated", {
-          id: this.comment._id,
-          content: this.editedContent
-        });
-      }
-    } catch (err) {
-      console.error("Failed to update comment:", err);
-    }
-  },
+                    this.comment.content = this.editedContent;
+                    this.editing = false;
+
+
+                    this.$emit("commentUpdated", {
+                        id: this.comment._id,
+                        content: this.editedContent
+                    });
+                }
+            } catch (err) {
+                console.error("Failed to update comment:", err);
+            }
+        },
         cancelEdit() {
             this.editedContent = this.comment.content;
             this.editing = false;
-        }
+        },
+    async confirmDelete() {
+  if (this.deleting) return;
+  this.deleting = true;
+
+  try {
+    const res = await axios.delete(`http://localhost:9000/comments/${this.comment._id}`);
+    if (res.data?.success) {
+    
+      this.$emit("commentDeleted", this.comment._id);
+    }
+  } catch (err) {
+    console.error("Failed to delete comment:", err);
+  } finally {
+    this.deleting = false;
+    this.showDeleteModal = false;
+  }
+}
     }
 };
 </script>
@@ -148,25 +180,35 @@ export default {
     margin-top: 10px;
     padding-right: 10px;
 }
+
 #save {
-  font-size: 20px;     
-  color: green;       
-  transition: transform 0.2s;
+    font-size: 20px;
+    color: green;
+    transition: transform 0.2s;
 }
+
 #save:hover {
-  transform: scale(1.2);
+    transform: scale(1.2);
 }
 
 #cancel {
-  font-size: 20px;    
-  color: red;      
-  cursor: pointer;
-  transition: transform 0.2s;
+    font-size: 20px;
+    color: red;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
+
 #cancel:hover {
-  transform: scale(1.2);
+    transform: scale(1.2);
 }
-#edit_textarea{
+
+#edit_textarea {
     padding: 10px;
+}
+.modal-content {
+  background-color: #adadb1;
+  color: black;
+  padding: 15px;
+  font-family: "Pixelify Sans", sans-serif;
 }
 </style>

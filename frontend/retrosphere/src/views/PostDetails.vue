@@ -21,7 +21,8 @@
 
         <div id="comments" class="overflow-auto">
             <Comment v-for="comment in filteredComments" :key="comment._id" :comment="comment"
-                :canEdit="store.user && store.user._id === comment.userId" @commentUpdated="updateComment" />
+                :canEdit="store.user && store.user._id === comment.userId" @commentUpdated="updateComment"
+                @commentDeleted="removeComment" />
         </div>
 
         <div v-if="store.isLoggedIn" class="post_comment">
@@ -84,6 +85,12 @@ export default {
             const index = this.post.comments.findIndex(c => c._id === updated.id);
             if (index !== -1) {
                 this.post.comments[index].content = updated.content;
+            }
+        },
+        removeComment(commentId) {
+            const index = this.post.comments.findIndex(c => c._id === commentId);
+            if (index !== -1) {
+                this.post.comments.splice(index, 1);
             }
         }
     },

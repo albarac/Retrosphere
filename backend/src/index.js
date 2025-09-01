@@ -368,29 +368,59 @@ async function connectDB() {
   });
 
   app.patch("/comments/:id", async (req, res) => {
-  try {
-    const commentId = req.params.id;
-    const { content } = req.body;
+    try {
+      const commentId = req.params.id;
+      const { content } = req.body;
 
-    if (!content) {
-      return res.status(400).json({ success: false, error: "Content is required" });
+      if (!content) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Content is required" });
+      }
+
+      const result = await db
+        .collection("Posts")
+        .updateOne(
+          { "comments._id": new ObjectId(commentId) },
+          { $set: { "comments.$.content": content } }
+        );
+
+      if (result.modifiedCount === 0) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Comment not found" });
+      }
+
+      res.json({ success: true, updatedContent: content });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, error: "Server error" });
     }
+  });
 
-    const result = await db.collection("Posts").updateOne(
-      { "comments._id": new ObjectId(commentId) },
-      { $set: { "comments.$.content": content } }
-    );
+  app.delete("/comments/:id", async (req, res) => {
+    try {
+      const commentId = req.params.id;
 
-    if (result.modifiedCount === 0) {
-      return res.status(404).json({ success: false, error: "Comment not found" });
+      const result = await db
+        .collection("Posts")
+        .updateOne(
+          { "comments._id": new ObjectId(commentId) },
+          { $pull: { comments: { _id: new ObjectId(commentId) } } }
+        );
+
+      if (result.modifiedCount === 0) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Comment not found" });
+      }
+
+      res.json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, error: "Server error" });
     }
-
-    res.json({ success: true, updatedContent: content });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: "Server error" });
-  }
-});
+  });
 }
 
 connectDB().then(() => {
