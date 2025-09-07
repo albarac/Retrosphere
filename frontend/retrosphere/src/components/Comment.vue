@@ -24,7 +24,7 @@
 
 
 
-        <div v-if="showDeleteModal" class="modal-overlay">
+        <div id="delete_modal" v-if="showDeleteModal" class="modal-overlay">
             <div class="modal-content">
                 <h5>Are you sure?</h5>
                 <p>This action will permanently delete the comment.</p>
@@ -210,5 +210,10 @@ export default {
   color: black;
   padding: 15px;
   font-family: "Pixelify Sans", sans-serif;
+}
+@media screen and (max-width: 600px) {
+    #delete_modal{
+        transform: translateX(-115px);
+    }
 }
 </style>
