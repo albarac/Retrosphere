@@ -63,6 +63,9 @@ export default {
                 "avatar0.png",
                 "avatar1.png",
                 "avatar2.png",
+                "avatar3.png",
+                "avatar4.png",
+                "avatar5.png"
             ]
         };
     },
@@ -125,6 +128,9 @@ export default {
 
 .avatar-selection {
     display: flex;
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 15px;
     margin-top: 10px;
 }
