@@ -9,7 +9,7 @@
             <div class="post-right">
                 <div class="post-header">
                     <h6>{{ post.title }}</h6>
-                    <h7 style="font-style: italic;">{{ formattedDate }}</h7>
+                    <h7 id="posted_date" style="font-style: italic;">{{ formattedDate }}</h7>
                 </div>
                 <div class="post-content">
                     {{ post.content }}
@@ -202,5 +202,10 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     font-family: "Jersey 15", sans-serif;
+}
+@media screen and (max-width: 600px) {
+  #posted_date {
+    display: none;
+  }
 }
 </style>

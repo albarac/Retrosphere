@@ -8,7 +8,7 @@
     <div class="post-right">
       <div class="post-header">
         <h6>{{ post.title }}</h6>
-        <h7 style="font-style: italic;">{{ formattedDate }}</h7>
+        <h7 id="posted_date" style="font-style: italic;">{{ formattedDate }}</h7>
       </div>
       <div class="post-content">
         {{ post.content }}
@@ -182,5 +182,10 @@ export default {
   color: black;
   padding: 15px;
   font-family: "Pixelify Sans", sans-serif;
+}
+@media screen and (max-width: 600px) {
+  #posted_date {
+    display: none;
+  }
 }
 </style>
