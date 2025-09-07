@@ -1,7 +1,7 @@
 <template>
   <nav id="navbar" class="navbar navbar-expand-lg">
     <div class="container-fluid">
-      <router-link to="/" style="text-decoration: none;">
+      <router-link @click.native="closeNavbar" to="/" style="text-decoration: none;">
         <a class="navbar-brand text-white">Retrosphere</a>
       </router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
@@ -12,37 +12,41 @@
 
       <div class="collapse navbar-collapse" id="navbarNavDropdown">
 
-        <router-link v-if="store.isLoggedIn" to="/add">
+        <router-link @click.native="closeNavbar" v-if="store.isLoggedIn" to="/add">
           <i id="add_post" class="bi bi-dpad-fill"></i>
         </router-link>
 
         <ul class="navbar-nav mx-auto">
           <ul class="navbar-nav mx-auto">
             <li class="nav-item">
-              <router-link class="nav-link text-white" to="/category/pc">PC</router-link>
+              <router-link class="nav-link text-white" @click.native="closeNavbar" to="/category/pc">PC</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link text-white" to="/category/sony">Sony</router-link>
+              <router-link class="nav-link text-white" @click.native="closeNavbar"
+                to="/category/sony">Sony</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link text-white" to="/category/nintendo">Nintendo</router-link>
+              <router-link class="nav-link text-white" @click.native="closeNavbar"
+                to="/category/nintendo">Nintendo</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link text-white" to="/category/sega">Sega</router-link>
+              <router-link class="nav-link text-white" @click.native="closeNavbar"
+                to="/category/sega">Sega</router-link>
             </li>
             <li class="nav-item">
-              <router-link class="nav-link text-white" to="/category/atari">Atari</router-link>
+              <router-link class="nav-link text-white" @click.native="closeNavbar"
+                to="/category/atari">Atari</router-link>
             </li>
           </ul>
         </ul>
 
-        <router-link v-if="store.isLoggedIn" to="/profile">
+        <router-link @click.native="closeNavbar" v-if="store.isLoggedIn" to="/profile">
           <i id="profile" class="bi bi-person-bounding-box"></i>
         </router-link>
 
 
         <button v-if="!store.isLoggedIn" type="button" class="btn" id="login" @click="showLoginModal">Login</button>
-        <button v-if="store.isLoggedIn" type="button" class="btn" id="login" @click="logout">Logout</button>
+        <button @click.native="closeNavbar" v-if="store.isLoggedIn" type="button" class="btn" id="login" @click="logout">Logout</button>
 
 
       </div>
@@ -111,6 +115,13 @@ export default {
   },
 
   methods: {
+    closeNavbar() {
+      const navbar = document.getElementById("navbarNavDropdown");
+      const bsCollapse = bootstrap.Collapse.getInstance(navbar);
+      if (bsCollapse) {
+        bsCollapse.hide();
+      }
+    },
     showLoginModal() {
       this.loginModal.show();
     },
@@ -211,6 +222,7 @@ input::placeholder {
   cursor: pointer;
   margin-right: 20px;
 }
+
 .navbar-nav .nav-item {
   margin-right: 15px;
 }
