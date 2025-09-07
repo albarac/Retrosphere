@@ -6,7 +6,7 @@
                 <h2>User Profile</h2>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;justify-content:center">
+            <div style="display: flex; flex-direction: column; gap: 10px; justify-content: center; align-items: flex-start;">
                 <h5>Username: {{ store.user?.username || "Guest" }}</h5>
                 <h5>Email: {{ store.user?.email || "guest@gmail.com" }}</h5>
             </div>
@@ -171,5 +171,10 @@ input::placeholder {
 #modal_btn {
     background-color: #9bbc0f;
     font-family: "Jersey 15", sans-serif;
+}
+@media screen and (max-width: 600px) {
+    .box {
+        width: 100%;
+    }
 }
 </style>
