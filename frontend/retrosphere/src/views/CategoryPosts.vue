@@ -2,6 +2,13 @@
   <div class="category">
     <h2 class="category-title">{{ capitalizedCategory }} Posts</h2>
 
+    <input
+      v-model="searchQuery"
+      type="text"
+      placeholder="Search posts..."
+      class="search-bar"
+    />
+
     <Post 
       v-for="post in filteredPosts" 
       :key="post._id" 
@@ -21,7 +28,8 @@ export default {
   components: { Post },
   data() {
     return {
-      posts: []
+      posts: [],
+      searchQuery: ''
     };
   },
   computed: {
@@ -32,7 +40,16 @@ export default {
       return this.$route.params.name; // pc, sony, etc.
     },
     filteredPosts() {
-      return this.posts.filter(p => p.category === this.category);
+      const categoryFiltered = this.posts.filter(p => p.category === this.category);
+
+      if (!this.searchQuery.trim()) return categoryFiltered;
+
+      const query = this.searchQuery.toLowerCase();
+      return categoryFiltered.filter(
+        post =>
+          post.title.toLowerCase().includes(query) ||
+          post.content.toLowerCase().includes(query)
+      );
     },
     capitalizedCategory() {
       return this.category.charAt(0).toUpperCase() + this.category.slice(1);
@@ -69,5 +86,15 @@ export default {
 .category-title {
   font-family: "Pixelify Sans", sans-serif;
   margin-bottom: 20px;
+}
+
+.search-bar {
+  width: 80%;
+  padding: 10px 15px;
+  font-size: 18px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+  border: 2px solid #333;
+  font-family: 'Pixelify Sans', sans-serif;
 }
 </style>
