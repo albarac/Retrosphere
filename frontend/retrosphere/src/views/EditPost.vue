@@ -1,4 +1,4 @@
-   <template>
+<template>
         <div class="edit">
             <div
                 style="width: 100%; font-family: 'Pixelify Sans', sans-serif; font-size: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
@@ -56,7 +56,9 @@ export default {
             }
         },
 
-
+        cancel() {
+            this.$router.push({ name: "Home" });
+        },
         async updatePost() {
             try {
                 const id = this.$route.params.id;
